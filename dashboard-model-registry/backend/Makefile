@@ -6,9 +6,9 @@ help:
 	@sed -n 's/^##//p' ${MAKEFILE_LIST} | column -t -s ':' |  sed -e 's/^/ /'
 
 ## run/api: run the cmd/api application
-.PHONY: run/api
-run/api:
-	go run ./cmd/api
+.PHONY: run/root
+run/root:
+	go run ./cmd/root
 
 ## audit: tidy dependencies and format, vet and test all code
 ## setup staticcheck ./...
