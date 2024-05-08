@@ -44,6 +44,6 @@ func (app *App) Routes() http.Handler {
 	router.HandlerFunc(http.MethodGet, HealthCheckPath, app.HealthcheckHandler)
 	router.HandlerFunc(http.MethodGet, ModelRegistry, app.ModelRegistryHandler)
 
-	return app.RecoverPanic(router)
+	return app.RecoverPanic(app.enableCORS(router))
 
 }
