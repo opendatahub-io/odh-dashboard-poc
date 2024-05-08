@@ -8,7 +8,8 @@ import (
 )
 
 const (
-	HealthCheckPath = "/v1/healthcheck"
+	HealthCheckPath = "/v1/model-registry/healthcheck"
+	ModelRegistry   = "/v1/model-registry/"
 )
 
 const (
@@ -41,6 +42,7 @@ func (app *App) Routes() http.Handler {
 	router.MethodNotAllowed = http.HandlerFunc(app.methodNotAllowedResponse)
 
 	router.HandlerFunc(http.MethodGet, HealthCheckPath, app.HealthcheckHandler)
+	router.HandlerFunc(http.MethodGet, ModelRegistry, app.ModelRegistryHandler)
 
 	return app.RecoverPanic(router)
 

@@ -1,9 +1,11 @@
 ### To run the server:
 
-make run/api
+make run/root
 
 ### Endpoints
 
-| URL Pattern    | Handler            | Action                       |
-| -------------- | ------------------ | ---------------------------- |
-| v1/healthcheck | healthcheckHandler | Show application information |
+| URL Pattern                    | Handler              | Action                       |
+| ------------------------------ | -------------------- | ---------------------------- |
+| /v1/model-registry/            | ModelRegistryHandler | Get all model registries     |
+| /v1/model-registry/healthcheck | HealthcheckHandler   | Show application information |
+
