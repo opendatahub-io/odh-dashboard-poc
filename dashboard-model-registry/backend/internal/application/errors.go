@@ -11,7 +11,7 @@ func (app *App) LogError(r *http.Request, err error) {
 		uri    = r.URL.RequestURI()
 	)
 
-	app.Logger.Error(err.Error(), "method", method, "uri", uri)
+	app.logger.Error(err.Error(), "method", method, "uri", uri)
 }
 
 func (app *App) BadRequestResponse(w http.ResponseWriter, r *http.Request, err error) {

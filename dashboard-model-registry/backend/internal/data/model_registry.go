@@ -1,4 +1,4 @@
-package models
+package data
 
 import (
 	"fmt"
@@ -10,11 +10,10 @@ type ModelRegistry struct {
 	Name string `json:"name"`
 }
 
-func FetchAllModelRegistry() ([]ModelRegistry, error) {
-	client, err := k8s.NewKubernetesClient()
-	if err != nil {
-		return nil, fmt.Errorf("error creating Kubernetes client: %w", err)
-	}
+type ModelRegistryModel struct {
+}
+
+func (m ModelRegistryModel) FetchAllModelRegistry(client *k8s.KubernetesClient) ([]ModelRegistry, error) {
 
 	resources, err := client.ListResources(k8s.ModelRegistryResource)
 	if err != nil {

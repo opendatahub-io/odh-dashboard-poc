@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/opendatahub-io/odh-dashboard-poc/dashboard-model-registry/cmd/config"
 	"log/slog"
 	"net/http"
 	"os"
@@ -13,10 +14,11 @@ import (
 
 func main() {
 
-	var cfg application.Config
+	var cfg config.Config
 	flag.IntVar(&cfg.Port, "port", 4000, "API server port")
-	flag.StringVar(&cfg.Env, "env", "development", "Environment (development|taging|production)")
-
+	//ederign this is not working
+	flag.Var(&cfg.Env, "env", "Environment (development|staging|production)")
+	cfg.Env = "development"
 	flag.Parse()
 
 	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))

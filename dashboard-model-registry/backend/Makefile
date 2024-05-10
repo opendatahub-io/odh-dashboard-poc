@@ -5,10 +5,10 @@ help:
 	@echo 'Usage:'
 	@sed -n 's/^##//p' ${MAKEFILE_LIST} | column -t -s ':' |  sed -e 's/^/ /'
 
-## run/api: run the cmd/api application
-.PHONY: run/root
-run/root:
-	go run ./cmd/root
+## run/root: run the api application
+.PHONY: run
+run:
+	go run ./cmd/root -env=development
 
 ## audit: tidy dependencies and format, vet and test all code
 ## setup staticcheck ./...
