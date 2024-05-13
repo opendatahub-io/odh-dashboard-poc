@@ -16,9 +16,10 @@ func main() {
 
 	var cfg config.Config
 	flag.IntVar(&cfg.Port, "port", 4000, "API server port")
-	//ederign this is not working
+	//ederign this is not working .envrc?
 	flag.Var(&cfg.Env, "env", "Environment (development|staging|production)")
 	cfg.Env = "development"
+	fmt.Printf(string(cfg.Env))
 	flag.Parse()
 
 	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))

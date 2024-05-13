@@ -10,8 +10,9 @@ import (
 )
 
 const (
-	HealthCheckPath = "/v1/model-registry/healthcheck"
-	ModelRegistry   = "/v1/model-registry/"
+	HealthCheckPath      = "/api/v1/healthcheck/"
+	ModelRegistry        = "/api/v1/model-registry/"
+	RegisteredModelsPath = "/api/v1/model-registry/:model_registry_id/registered_models"
 )
 
 const (
@@ -33,15 +34,17 @@ func NewApp(cfg config.Config, logger *slog.Logger) *App {
 }
 
 func (app *App) Routes() http.Handler {
-
 	router := httprouter.New()
 
 	router.NotFound = http.HandlerFunc(app.notFoundResponse)
 	router.MethodNotAllowed = http.HandlerFunc(app.methodNotAllowedResponse)
 
-	router.HandlerFunc(http.MethodGet, HealthCheckPath, app.HealthcheckHandler)
-	router.Handler(http.MethodGet, ModelRegistry, app.KubernetesClient(http.HandlerFunc(app.ModelRegistryHandler)))
+	// HTTP client routes
+	router.GET(HealthCheckPath, app.HealthcheckHandler)
+	router.GET(RegisteredModelsPath, app.AttachRESTClient(app.RegisteredModelsHandler))
+
+	// Kubernetes client routes
+	router.GET(ModelRegistry, app.KubernetesClient(app.ModelRegistryHandler))
 
 	return app.RecoverPanic(app.enableCORS(router))
-
 }

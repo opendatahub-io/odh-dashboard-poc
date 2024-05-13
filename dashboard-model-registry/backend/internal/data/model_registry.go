@@ -15,7 +15,7 @@ type ModelRegistryModel struct {
 
 func (m ModelRegistryModel) FetchAllModelRegistry(client *k8s.KubernetesClient) ([]ModelRegistry, error) {
 
-	resources, err := client.ListResources(k8s.ModelRegistryResource)
+	resources, err := client.ListResources(k8s.ModelRegistryK8sResource)
 	if err != nil {
 		return nil, fmt.Errorf("error fetching model registries: %w", err)
 	}

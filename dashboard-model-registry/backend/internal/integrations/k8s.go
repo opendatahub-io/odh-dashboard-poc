@@ -1,4 +1,4 @@
-package k8s
+package integrations
 
 import (
 	"context"
@@ -14,12 +14,6 @@ import (
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/client-go/dynamic"
 	"k8s.io/client-go/rest"
-)
-
-const (
-	ModelRegistryNamespace = "odh-model-registries"
-	ModelRegistryResource  = "modelregistries"
-	ModelRegistryHost      = "https://api.modelserving-ui.dev.datahub.redhat.com:6443"
 )
 
 type KubernetesClient struct {
@@ -41,24 +35,18 @@ func NewKubernetesClient(env config.Environment) (*KubernetesClient, error) {
 		return nil, errors.New(fmt.Sprintf("%s is not implemented yet", config.Staging))
 	case config.Production:
 		/* ederign TODO
-		   const getCurrentToken = async (currentUser: User) => {
-		     return new Promise((resolve, reject) => {
-		       if (currentContext === 'inClusterContext') {
-		         const location =
-		           currentUser?.authProvider?.config?.tokenFile ||
-		           '/var/run/secrets/kubernetes.io/serviceaccount/token';
-		         fs.readFile(location, 'utf8', (err, data) => {
-		           if (err) {
-		             reject(err);
+		   export const USER_ACCESS_TOKEN = 'x-forwarded-access-token';
+		   		    const accessToken = request.headers[USER_ACCESS_TOKEN];
+		           if (!accessToken) {
+		             fastify.log.error(
+		               `No ${USER_ACCESS_TOKEN} header. Cannot make a pass through call as this user.`,
+		             );
+		             throw new Error('No access token provided by oauth. Cannot make any API calls to kube.');
 		           }
-		           resolve(data);
-		         });
-		       } else {
-		         resolve(currentUser?.token || '');
-		       }
-		     });
-		   };
-
+		           headers = {
+		             ...kubeHeaders,
+		             Authorization: `Bearer ${accessToken}`,
+		           };
 
 		*/
 		return nil, errors.New(fmt.Sprintf("%s is not implemented yet", config.Production))
@@ -68,7 +56,7 @@ func NewKubernetesClient(env config.Environment) (*KubernetesClient, error) {
 
 	config := &rest.Config{
 		BearerToken: token,
-		Host:        ModelRegistryHost,
+		Host:        ModelRegistryK8sHost,
 		TLSClientConfig: rest.TLSClientConfig{
 			Insecure: true,
 		},
@@ -88,9 +76,9 @@ func (k *KubernetesClient) ListResources(resourceType string) ([]unstructured.Un
 		Resource: resourceType,
 	}
 
-	unstructuredList, err := k.client.Resource(gvr).Namespace(ModelRegistryNamespace).List(context.TODO(), v1.ListOptions{})
+	unstructuredList, err := k.client.Resource(gvr).Namespace(ModelRegistryK8sNamespace).List(context.TODO(), v1.ListOptions{})
 	if err != nil {
-		return nil, fmt.Errorf("failed to list custom resources in namespace %s: %v", ModelRegistryNamespace, err)
+		return nil, fmt.Errorf("failed to list custom resources in namespace %s: %v", ModelRegistryK8sNamespace, err)
 	}
 
 	return unstructuredList.Items, nil
