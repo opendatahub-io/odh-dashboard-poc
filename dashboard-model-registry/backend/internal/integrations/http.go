@@ -81,9 +81,7 @@ func (c *HTTPClient) GET(url string) ([]byte, error) {
 
 	body, err := io.ReadAll(response.Body)
 	if err != nil {
-		//ederign use http error here
 		return nil, fmt.Errorf("error reading response body: %w", err)
 	}
-	fmt.Println(string(body))
 	return body, nil
 }

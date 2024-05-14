@@ -5,7 +5,7 @@ go 1.22.2
 require github.com/julienschmidt/httprouter v1.3.0
 
 require (
-	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/go-logr/logr v1.4.1 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
@@ -31,6 +31,7 @@ require (
 )
 
 require (
+	github.com/kubeflow/model-registry v0.2.0-alpha
 	k8s.io/apimachinery v0.30.0
 	k8s.io/client-go v0.30.0
 )

@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/julienschmidt/httprouter"
 	integrations "github.com/opendatahub-io/odh-dashboard-poc/dashboard-model-registry/internal/integrations"
-	"log"
 	"net/http"
 )
 
@@ -42,9 +41,7 @@ func (app *App) KubernetesClient(next httprouter.Handle) httprouter.Handle {
 	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		client, err := integrations.NewKubernetesClient(app.config.Env)
 		if err != nil {
-			//ederign fix this error
-			log.Printf("Failed to create Kubernetes client: %v", err)
-			http.Error(w, "Failed to create Kubernetes client", http.StatusInternalServerError)
+			app.serverErrorResponse(w, r, fmt.Errorf("failed to create Kubernetes client: %v", err))
 			return
 		}
 
@@ -58,8 +55,7 @@ func (app *App) AttachRESTClient(handler func(http.ResponseWriter, *http.Request
 
 		modelRegistryID := ps.ByName("model_registry_id")
 
-		//ederign hardcodedUsage
-		modelRegistryBaseURL := fetchModelRegistryURL(modelRegistryID)
+		modelRegistryBaseURL := resolveModelRegistryURL(modelRegistryID)
 		client, err := integrations.NewHTTPClient(app.config.Env, modelRegistryBaseURL)
 		if err != nil {
 			http.Error(w, "Failed to create REST client", http.StatusInternalServerError)
@@ -71,7 +67,7 @@ func (app *App) AttachRESTClient(handler func(http.ResponseWriter, *http.Request
 }
 
 // TEMP METHOD!!!!
-func fetchModelRegistryURL(id string) string {
+func resolveModelRegistryURL(id string) string {
 	//ederign fix this hardcoded usage
 	if id == "internal-modelregistry" {
 		return "http://internal-modelregistry-http-odh-model-registries.apps.modelserving-ui.dev.datahub.redhat.com/api/model_registry/v1alpha3"
