@@ -1,0 +1,34 @@
+# POST /v1/model-registry/{model_registry_id}/registered_models
+POST http://localhost:4000/api/v1/model-registry/model_registry/registered_models
+Content-Type: application/json
+
+{
+  "customProperties": {
+    "my-label9": {
+      "metadataType": "MetadataStringValue",
+      "string_value": "val"
+    }
+  },
+  "description": "bella description",
+  "externalId": "1",
+  "name": "bella",
+  "owner": "eder",
+  "state": "LIVE"
+}
+
+###
+
+# GET /v1/model-registry/
+GET localhost:4000/api/v1/model-registry/
+
+###
+# GET /v1/healthcheck
+GET localhost:4000/api/v1/healthcheck/
+
+###
+# GET /v1/model-registry/{model_registry_id}/registered_models
+GET localhost:4000/api/v1/model-registry/model_registry/registered_models
+
+###
+
+

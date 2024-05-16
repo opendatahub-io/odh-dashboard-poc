@@ -41,7 +41,8 @@ func (app *App) Routes() http.Handler {
 
 	// HTTP client routes
 	router.GET(HealthCheckPath, app.HealthcheckHandler)
-	router.GET(RegisteredModelsPath, app.AttachRESTClient(app.RegisteredModelsHandler))
+	router.GET(RegisteredModelsPath, app.AttachRESTClient(app.GetRegisteredModelsHandler))
+	router.POST(RegisteredModelsPath, app.AttachRESTClient(app.CreateRegisteredModelHandler))
 
 	// Kubernetes client routes
 	router.GET(ModelRegistry, app.KubernetesClient(app.ModelRegistryHandler))

@@ -1,6 +1,7 @@
 package data
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"github.com/kubeflow/model-registry/pkg/openapi"
@@ -22,4 +23,21 @@ func FetchAllRegisteredModels(client *integrations.HTTPClient) (*openapi.Registe
 	}
 
 	return &modelList, nil
+}
+
+func CreateRegisteredModel(client *integrations.HTTPClient, jsonData []byte) (*openapi.RegisteredModel, error) {
+	responseData, err := client.POST(registerModelPath, bytes.NewBuffer(jsonData))
+	if err != nil {
+		return nil, err
+	}
+	if err != nil {
+		return nil, fmt.Errorf("error posting registered model: %w", err)
+	}
+
+	var model openapi.RegisteredModel
+	if err := json.Unmarshal(responseData, &model); err != nil {
+		return nil, fmt.Errorf("error decoding response data: %w", err)
+	}
+
+	return &model, nil
 }

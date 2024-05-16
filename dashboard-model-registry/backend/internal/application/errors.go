@@ -1,8 +1,11 @@
 package application
 
 import (
+	"encoding/json"
 	"fmt"
+	"github.com/opendatahub-io/odh-dashboard-poc/dashboard-model-registry/internal/integrations"
 	"net/http"
+	"strconv"
 )
 
 func (app *App) LogError(r *http.Request, err error) {
@@ -14,39 +17,78 @@ func (app *App) LogError(r *http.Request, err error) {
 	app.logger.Error(err.Error(), "method", method, "uri", uri)
 }
 
-func (app *App) BadRequestResponse(w http.ResponseWriter, r *http.Request, err error) {
-	app.errorResponse(w, r, http.StatusBadRequest, err.Error())
+func (app *App) badRequestResponse(w http.ResponseWriter, r *http.Request, err error) {
+	httpError := &integrations.HTTPError{
+		StatusCode: http.StatusBadRequest,
+		ErrorResponse: integrations.ErrorResponse{
+			Code:    strconv.Itoa(http.StatusBadRequest),
+			Message: err.Error(),
+		},
+	}
+	app.errorResponse(w, r, httpError)
 }
 
-func (app *App) errorResponse(w http.ResponseWriter, r *http.Request, status int, message any) {
+func (app *App) errorResponse(w http.ResponseWriter, r *http.Request, error *integrations.HTTPError) {
 
-	env := Envelope{"error": message}
+	env := Envelope{"error": error}
 
-	err := app.WriteJSON(w, status, env, nil)
+	err := app.WriteJSON(w, error.StatusCode, env, nil)
 
 	if err != nil {
 		app.LogError(r, err)
-		w.WriteHeader(500)
+		w.WriteHeader(error.StatusCode)
 	}
 }
 
 func (app *App) serverErrorResponse(w http.ResponseWriter, r *http.Request, err error) {
 	app.LogError(r, err)
 
-	message := "the server encountered a problem and could not process your request"
-	app.errorResponse(w, r, http.StatusInternalServerError, message)
+	httpError := &integrations.HTTPError{
+		StatusCode: http.StatusInternalServerError,
+		ErrorResponse: integrations.ErrorResponse{
+			Code:    strconv.Itoa(http.StatusInternalServerError),
+			Message: "the server encountered a problem and could not process your request",
+		},
+	}
+	app.errorResponse(w, r, httpError)
 }
 
 func (app *App) notFoundResponse(w http.ResponseWriter, r *http.Request) {
-	message := "the requested resource could not be found"
-	app.errorResponse(w, r, http.StatusNotFound, message)
+
+	httpError := &integrations.HTTPError{
+		StatusCode: http.StatusNotFound,
+		ErrorResponse: integrations.ErrorResponse{
+			Code:    strconv.Itoa(http.StatusNotFound),
+			Message: "the requested resource could not be found",
+		},
+	}
+	app.errorResponse(w, r, httpError)
 }
 
 func (app *App) methodNotAllowedResponse(w http.ResponseWriter, r *http.Request) {
-	message := fmt.Sprintf("the %s method is not supported for this resource", r.Method)
-	app.errorResponse(w, r, http.StatusMethodNotAllowed, message)
+
+	httpError := &integrations.HTTPError{
+		StatusCode: http.StatusMethodNotAllowed,
+		ErrorResponse: integrations.ErrorResponse{
+			Code:    strconv.Itoa(http.StatusMethodNotAllowed),
+			Message: fmt.Sprintf("the %s method is not supported for this resource", r.Method),
+		},
+	}
+	app.errorResponse(w, r, httpError)
 }
 
 func (app *App) failedValidationResponse(w http.ResponseWriter, r *http.Request, errors map[string]string) {
-	app.errorResponse(w, r, http.StatusUnprocessableEntity, errors)
+
+	message, err := json.Marshal(errors)
+	if err != nil {
+		message = []byte("{}")
+	}
+	httpError := &integrations.HTTPError{
+		StatusCode: http.StatusUnprocessableEntity,
+		ErrorResponse: integrations.ErrorResponse{
+			Code:    strconv.Itoa(http.StatusUnprocessableEntity),
+			Message: string(message),
+		},
+	}
+	app.errorResponse(w, r, httpError)
 }

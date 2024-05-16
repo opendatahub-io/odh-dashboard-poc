@@ -58,7 +58,7 @@ func (app *App) AttachRESTClient(handler func(http.ResponseWriter, *http.Request
 		modelRegistryBaseURL := resolveModelRegistryURL(modelRegistryID)
 		client, err := integrations.NewHTTPClient(app.config.Env, modelRegistryBaseURL)
 		if err != nil {
-			http.Error(w, "Failed to create REST client", http.StatusInternalServerError)
+			app.serverErrorResponse(w, r, fmt.Errorf("failed to create Kubernetes client: %v", err))
 			return
 		}
 		ctx := context.WithValue(r.Context(), httpClientKey, client)
